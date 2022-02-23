@@ -63,6 +63,7 @@ def start_game():
         print("=====================================")
         print()
         print("Player, it's your turn")
+        print("Please position your hit (Game board has size from A to H and 1 to 8)")
         position = parse_position(input(Fore.GREEN + "Enter coordinates for your shot :"))
         print(Fore.BLACK)
         is_hit = GameController.check_is_hit(enemyFleet, position)
