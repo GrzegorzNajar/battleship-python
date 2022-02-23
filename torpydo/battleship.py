@@ -60,6 +60,8 @@ def start_game():
 
     while True:
         print()
+        print("=====================================")
+        print()
         print("Player, it's your turn")
         position = parse_position(input(Fore.GREEN + "Enter coordinates for your shot :"))
         print(Fore.BLACK)
@@ -79,6 +81,10 @@ def start_game():
         print(Fore.RED + "Yeah ! Nice hit !" if is_hit else Fore.BLUE + "Miss")
         print(Fore.BLACK)
         TelemetryClient.trackEvent('Player_ShootPosition', {'custom_dimensions': {'Position': str(position), 'IsHit': is_hit}})
+
+        print()
+        print("-------------------------------------")
+        print()
 
         position = get_random_position()
         is_hit = GameController.check_is_hit(myFleet, position)
