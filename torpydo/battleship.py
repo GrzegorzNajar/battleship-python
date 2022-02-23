@@ -8,6 +8,8 @@ from torpydo.ship import Color, Letter, Position, Ship
 from torpydo.game_controller import GameController
 from torpydo.telemetryclient import TelemetryClient
 
+import sys
+
 print("Starting")
 
 myFleet = []
@@ -71,17 +73,25 @@ def start_game():
             -   (\- |  \ /  |  /)  -
                  -\  \     /  /-
                    \  \   /  /''')
+            print(Fore.BLACK)
 
-        print(Fore.YELLOW + "Yeah ! Nice hit !" if is_hit else Fore.CADET_BLUE + "Miss")
+        print(Fore.YELLOW + "Yeah ! Nice hit !" if is_hit else Fore.BLUE + "Miss")
+        print(Fore.BLACK)
         TelemetryClient.trackEvent('Player_ShootPosition', {'custom_dimensions': {'Position': str(position), 'IsHit': is_hit}})
 
         position = get_random_position()
         is_hit = GameController.check_is_hit(myFleet, position)
         print()
-        print(f"Computer shoot in {str(position)} and {'hit your ship!' if is_hit else 'miss'}")
+        if is_hit:
+            rest = Fore.YELLOW + "hit" + Fore.BLACK + " your ship"
+        else:
+            rest = Fore.BLUE + 'Miss'
+        print(f"Computer shoot in {str(position)} and " + rest)
+
+        print(Fore.BLACK)
         TelemetryClient.trackEvent('Computer_ShootPosition', {'custom_dimensions': {'Position': str(position), 'IsHit': is_hit}})
         if is_hit:
-            print(Fore.RED + r'''
+            print(Fore.YELLOW + r'''
                 \          .  ./
               \   .:"";'.:..""   /
                  (M^^.^~~:.'"").
@@ -90,6 +100,7 @@ def start_game():
             -   (\- |  \ /  |  /)  -
                  -\  \     /  /-
                    \  \   /  /''')
+            print(Fore.BLACK)
 
 def parse_position(input: str):
     letter = Letter[input.upper()[:1]]
@@ -124,8 +135,34 @@ def initialize_myFleet():
         print()
         print(f"Please enter the positions for the {ship.name} (size: {ship.size})")
 
-        for i in range(ship.size):
-            position_input = input(f"Enter position {i+1} of {ship.size} (i.e A3):")
+        if len(sys.argv) > 1 and sys.argv[1] == '-demo':
+            for i in range(5):
+                position_input = 'A'+str(i)
+                ship.add_position(position_input)
+                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
+
+            for i in range(4):
+                position_input = 'B'+str(i)
+                ship.add_position(position_input)
+                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
+
+            for i in range(3):
+                position_input = 'C'+str(i)
+                ship.add_position(position_input)
+                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
+
+            for i in range(3):
+                position_input = 'D'+str(i)
+                ship.add_position(position_input)
+                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
+
+            for i in range(2):
+                position_input = 'E'+str(i)
+                ship.add_position(position_input)
+                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
+        else:
+            for i in range(ship.size):
+                position_input = input(f"Enter position {i+1} of {ship.size} (i.e A3):")
             ship.add_position(position_input)
             TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
 
