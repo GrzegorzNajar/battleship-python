@@ -36,6 +36,7 @@ class Ship(object):
         self.size = size
         self.color = color
         self.positions = []
+        self.destroyed = []
 
     def add_position(self, input: str):
         letter = Letter[input.upper()[:1]]

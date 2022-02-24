@@ -13,6 +13,11 @@ class GameController(object):
         for ship in ships:
             for position in ship.positions:
                 if position == shot:
+                    ship.positions.remove(position)
+                    ship.destroyed.append(position)
+                    if len(ship.positions) == 0:
+                        print(ship.name + " was destroyed")
+                        ships.remove(ship)
                     return True
 
         return False

@@ -10,5 +10,5 @@ class TelemetryClient(object):
         logger.setLevel(logging.INFO)
 
     def trackEvent(eventName: str, properties: object):
-        logger.info(eventName, extra=properties)        
+        logger.info(eventName, extra=properties)
 

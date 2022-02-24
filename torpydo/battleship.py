@@ -16,8 +16,8 @@ myFleet = []
 enemyFleet = []
 
 def main():
-    TelemetryClient.init()
-    TelemetryClient.trackEvent('ApplicationStarted', {'custom_dimensions': {'Technology': 'Python'}})
+    # TelemetryClient.init()
+    # TelemetryClient.trackEvent('ApplicationStarted', {'custom_dimensions': {'Technology': 'Python'}})
     colorama.init()
     print(Fore.YELLOW + r"""
                                     |__
@@ -62,8 +62,17 @@ def start_game():
         print()
         print("=====================================")
         print()
-        print("Player, it's your turn")
+        print("Player, it's your turn, \nYour ships: " + str(myFleet) + "\nEnemy ships number: " + str(len(enemyFleet)) )
+        if (len(myFleet) == 0):
+            print("You Lost Game")
+            exit(0)
+
+        if (len(enemyFleet) == 0):
+            print("You Won Game")
+            exit(0)
+
         print("Please position your hit (Game board has size from A to H and 1 to 8)")
+
         position = parse_position(input(Fore.GREEN + "Enter coordinates for your shot :"))
         print(Fore.BLACK)
         is_hit = GameController.check_is_hit(enemyFleet, position)
@@ -79,7 +88,7 @@ def start_game():
                    \  \   /  /''')
             print(Fore.BLACK)
 
-        print(Fore.RED + "Yeah ! Nice hit !" if is_hit else Fore.BLUE + "Miss")
+        print(Fore.RED + str(position) + " Yeah ! Nice hit !" if is_hit else Fore.BLUE + str(position) +  " Miss")
         print(Fore.BLACK)
         TelemetryClient.trackEvent('Player_ShootPosition', {'custom_dimensions': {'Position': str(position), 'IsHit': is_hit}})
 
@@ -110,9 +119,13 @@ def start_game():
                    \  \   /  /''')
             print(Fore.BLACK)
 
-def parse_position(input: str):
-    letter = Letter[input.upper()[:1]]
-    number = int(input[1:])
+def parse_position(inp: str):
+    while not((len(inp) == 2) and (ord(inp.upper()[:1]) in range(ord('A'), ord('H') + 1)) and (inp[1:].isnumeric())):
+        print(Fore.RED + 'Wrong input')
+        inp = input(Fore.BLACK + "try again:")
+
+    letter = Letter[inp.upper()[:1]]
+    number = int(inp[1:])
     position = Position(letter, number)
 
     return Position(letter, number)
@@ -138,42 +151,24 @@ def initialize_myFleet():
     myFleet = GameController.initialize_ships()
 
     print("Please position your fleet (Game board has size from A to H and 1 to 8) :")
+    j=0
 
     for ship in myFleet:
         print()
         print(f"Please enter the positions for the {ship.name} (size: {ship.size})")
+        j+=1
 
         if len(sys.argv) > 1 and sys.argv[1] == '-demo':
-            for i in range(5):
-                position_input = 'A'+str(i)
-                ship.add_position(position_input)
-                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
-
-            for i in range(4):
-                position_input = 'B'+str(i)
-                ship.add_position(position_input)
-                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
-
-            for i in range(3):
-                position_input = 'C'+str(i)
-                ship.add_position(position_input)
-                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
-
-            for i in range(3):
-                position_input = 'D'+str(i)
-                ship.add_position(position_input)
-                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
-
-            for i in range(2):
-                position_input = 'E'+str(i)
-                ship.add_position(position_input)
+            for i in range(ship.size):
+                position_input = Position(Letter(j),i+1)
+                ship.positions.append(position_input)
                 TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
         else:
             for i in range(ship.size):
-                position_input = input(Fore.GREEN + f"Enter position {i+1} of {ship.size} (i.e A3):")
-            ship.add_position(position_input)
-            TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
-            print(Fore.BLACK)
+                position_input = parse_position(input(Fore.GREEN + f"Enter position {i+1} of {ship.size} (i.e A3):"))
+                ship.positions.append(position_input)
+                TelemetryClient.trackEvent('Player_PlaceShipPosition', {'custom_dimensions': {'Position': position_input, 'Ship': ship.name, 'PositionInShip': i}})
+            print(Fore.BLACK + "Your ships: " + str(myFleet) )
 
 def initialize_enemyFleet():
     global enemyFleet
